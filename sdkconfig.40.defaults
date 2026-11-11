@@ -1,0 +1,6 @@
+# Chọn profile hiển thị TFT 4.0 inch 480x320 (Chip ST7796S)
+CONFIG_WAZE_HUD_DISPLAY_40_480X320=y
+CONFIG_WAZE_HUD_DISPLAY_35_480X320=n
+
+# Đảm bảo tính năng DMA và SPI3 hoạt động mượt mà cho màn hình lớn
+CONFIG_SPI_MASTER_IN_IRAM=y
