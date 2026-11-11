@@ -4,10 +4,9 @@
 
 **Hệ thống hiển thị thông tin trên kính lái (Head-Up Display) thông minh dành cho ô tô**
 
-[![ESP-IDF](https://shields.io)](https://espressif.com)
-[![Hardware](https://shields.io)](https://espressif.com)
-[![Connectivity](https://shields.io)](#)
-[![Language](https://shields.io)](#)
+<kbd>🔥 ESP-IDF v5.5.4</kbd> &nbsp; <kbd>📟 MCU: ESP32-S3</kbd> &nbsp; <kbd>📶 Bluetooth Low Energy</kbd> &nbsp; <kbd>🇻🇳 Tiếng Việt</kbd>
+
+<br>
 
 *Đồng bộ dữ liệu dẫn đường, cảnh báo camera phạt nguội và giới hạn tốc độ theo thời gian thực qua Bluetooth Low Energy (BLE).*
 
