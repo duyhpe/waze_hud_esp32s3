@@ -19,7 +19,7 @@
 
 ## 📖 Tổng quan dự án
 
-**WazeHUD ESP32-S3** là dự án firmware nhúng được phát triển trên nền tảng **ESP-IDF**, biến các bo mạch **ESP32-S3** kết hợp màn hình TFT thành một thiết bị Head-Up Display (HUD) chuyên dụng trên xe hơi. 
+**WazeHUD ESP32-S3** là dự án firmware nhúng được phát triển trên nền tảng **ESP-IDF**, biến các bo mạch **ESP32-S3** kết hợp màn hình TFT tốc độ cao thành một thiết bị Head-Up Display (HUD) chuyên dụng trên xe hơi. 
 
 Thiết bị giao tiếp không dây với điện thoại thông minh thông qua giao thức **Bluetooth Low Energy (BLE)** độ trễ thấp, trích xuất và hiển thị trực quan các thông tin quan trọng nhất giúp tài xế tập trung quan sát cung đường mà không cần rời mắt khỏi kính lái.
 
@@ -29,11 +29,11 @@ Thiết bị giao tiếp không dây với điện thoại thông minh thông qu
 
 * **⚡ Kết nối BLE độ ổn định cao:** Tự động quảng bá (Advertising), ghép nối nhanh và duy trì kết nối bền bỉ với ứng dụng dẫn đường trên điện thoại.
 * **🎨 Giao diện tối ưu cho lái xe:**
-  * Hiển thị tốc độ hiện tại với kích thước lớn, tương phản cao.
+  * Hiển thị tốc độ hiện tại với kích thước lớn, độ tương phản cao.
   * Cảnh báo biển báo giới hạn tốc độ và khu vực có camera giao thông/phạt nguội.
   * Hiển thị mũi tên chỉ hướng rẽ tiếp theo, khoảng cách và tên đường (hỗ trợ đầy đủ bảng mã tiếng Việt có dấu).
   * Hỗ trợ chế độ lật gương (Mirror Mode) để phản chiếu trực tiếp lên kính lái.
-* **🖥️ Hỗ trợ đa nền tảng màn hình:** Dễ dàng chuyển đổi giữa nhiều kích thước và chuẩn giao tiếp màn hình thông qua hệ thống file cấu hình `sdkconfig` tách biệt.
+* **🖥️ Hỗ trợ đa nền tảng màn hình tốc độ cao:** Tích hợp sẵn các component chính thức từ Espressif (QSPI 40 MHz, SPI 40 MHz, 8-bit Parallel) thông qua hệ thống file cấu hình `sdkconfig` tách biệt.
 * **🧪 Chế độ giả lập tích hợp (Mock Mode):** Cho phép chạy kiểm thử toàn bộ hiệu ứng UI, font chữ và bố cục ngay trên bàn làm việc mà không cần kết nối điện thoại hay di chuyển thực tế.
 
 ---
@@ -42,11 +42,11 @@ Thiết bị giao tiếp không dây với điện thoại thông minh thông qu
 
 Dự án được tối ưu hóa cho vi điều khiển **ESP32-S3** (khuyến nghị phiên bản có PSRAM và Flash từ 8MB–16MB) và hỗ trợ sẵn các cấu hình phần cứng sau:
 
-| Cấu hình | Bo mạch / Màn hình | Độ phân giải | Driver | File cấu hình | Tài liệu hướng dẫn |
-| :--- | :--- | :---: | :---: | :--- | :--- |
-| **Mặc định** | **LILYGO T-Display S3** (16MB Flash) | `320 x 170` | ST7789 | `sdkconfig.defaults` | *Tích hợp sẵn* |
-| **Màn hình 3.5"** | ESP32-S3 + Màn hình TFT 3.5 inch | `480 x 320` | ILI9488 / ST7796 | `sdkconfig.35.defaults` | [DISPLAY_35_PORTING.md](./DISPLAY_35_PORTING.md) |
-| **Màn hình 4.0"** | ESP32-S3 + Màn hình TFT 4.0 inch | `480 x 320` | ST7796S | `sdkconfig.40.defaults` | [DISPLAY_40_PORTING.md](./DISPLAY_40_PORTING.md) |
+| Cấu hình | Bo mạch / Màn hình | Độ phân giải | Driver & Giao tiếp | File cấu hình | Tài liệu hướng dẫn |
+| :--- | :--- | :---: | :--- | :--- | :--- |
+| **Mặc định** | **LILYGO T-Display S3** (16MB Flash) | `320 x 170` | `ST7789` (8-bit Parallel) | `sdkconfig.defaults` | *Tích hợp sẵn* |
+| **Màn hình 3.5"** | ESP32-S3 + Màn hình TFT 3.5 inch | `480 x 320` | `espressif/esp_lcd_st77922` (**QSPI 40 MHz**) | `sdkconfig.35.defaults` | [DISPLAY_35_PORTING.md](./DISPLAY_35_PORTING.md) |
+| **Màn hình 4.0"** | ESP32-S3 + Màn hình TFT 4.0 inch | `480 x 320` | `ST7796S` (SPI 40 MHz) | `sdkconfig.40.defaults` | [DISPLAY_40_PORTING.md](./DISPLAY_40_PORTING.md) |
 | **Giả lập UI** | Tất cả bo mạch ESP32-S3 hỗ trợ | Tùy chọn | — | `sdkconfig.mock.defaults` | *Chạy dữ liệu mẫu* |
 
 ---
@@ -91,9 +91,13 @@ cd waze_hud_esp32s3
 # Bước 2: Thiết lập chip mục tiêu là ESP32-S3
 idf.py set-target esp32s3
 
-# Bước 3: Áp dụng cấu hình phần cứng mong muốn (Ví dụ cho màn hình 4.0 inch)
-# Bỏ qua bước này nếu dùng cấu hình mặc định LILYGO T-Display S3
-cp sdkconfig.40.defaults sdkconfig
+# Bước 3: Áp dụng cấu hình phần cứng mong muốn
+# - Dùng cho màn hình 3.5" (ST77922 QSPI 40 MHz):
+cp sdkconfig.35.defaults sdkconfig
+# - Dùng cho màn hình 4.0" (ST7796S SPI 40 MHz):
+# cp sdkconfig.40.defaults sdkconfig
+# - Bỏ qua bước này nếu dùng cấu hình mặc định LILYGO T-Display S3
+
 idf.py reconfigure
 
 # Bước 4: Biên dịch dự án
@@ -113,14 +117,14 @@ waze-hud/
 ├── tools/                       # Script hỗ trợ đóng gói binary và tiện ích phát triển
 ├── partitions.csv               # Bảng phân vùng bộ nhớ Flash tùy chỉnh (hỗ trợ OTA & NVS)
 ├── CMakeLists.txt               # Cấu hình build cấp dự án của ESP-IDF
-├── dependencies.lock            # Khóa phiên bản các thư viện thành phần (Managed Components)
+├── dependencies.lock            # Khóa phiên bản các thư viện thành phần (như esp_lcd_st77922)
 ├── sdkconfig.defaults           # Cấu hình mặc định (LILYGO T-Display S3)
-├── sdkconfig.35.defaults        # Cấu hình tối ưu cho màn hình 3.5 inch (480x320)
-├── sdkconfig.40.defaults        # Cấu hình tối ưu cho màn hình 4.0 inch (480x320)
+├── sdkconfig.35.defaults        # Cấu hình cho màn hình 3.5" (ST77922 QSPI 40 MHz)
+├── sdkconfig.40.defaults        # Cấu hình cho màn hình 4.0" (ST7796S SPI 40 MHz)
 ├── sdkconfig.mock.defaults      # Cấu hình bật chế độ giả lập dữ liệu dẫn đường
 ├── FLASH_FIRMWARE_VI.md         # Tài liệu hướng dẫn nạp firmware chi tiết (Tiếng Việt)
-├── DISPLAY_35_PORTING.md        # Tài liệu kỹ thuật chuyển đổi sang màn hình 3.5 inch
-└── DISPLAY_40_PORTING.md        # Tài liệu kỹ thuật chuyển đổi sang màn hình 4.0 inch
+├── DISPLAY_35_PORTING.md        # Tài liệu kỹ thuật porting màn hình 3.5" (ST77922)
+└── DISPLAY_40_PORTING.md        # Tài liệu kỹ thuật porting màn hình 4.0" (ST7796S)
 ```
 
 ---
